@@ -39,6 +39,13 @@ struct stat *default_stat_entry(struct stat *stat_defaults)
 	return stat_defaults;
 }
 
+static int glist_data_compare(GList *a, GList *b)
+{
+	if (a->data == b->data)
+		return 0;
+	return -1;
+}
+
 static int imuse_getattr(const char *path, struct stat *stbuf)
 {
 	int res = 0;
@@ -49,7 +56,7 @@ static int imuse_getattr(const char *path, struct stat *stbuf)
 		stbuf->st_nlink = 2;
 	} else {
 		++path;
-		GList *rc = g_list_find(g_hash_table_get_keys(__special_directories), path);
+		GList *rc = g_list_find_custom(g_hash_table_get_keys(__special_directories), path, (GCompareFunc)(glist_data_compare));
 		if (rc) {
 			stbuf->st_mode = S_IFDIR | 0755;
 			stbuf->st_nlink = 2;
