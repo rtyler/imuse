@@ -2,10 +2,10 @@
 CC   	?= gcc
 TAR	?= tar
 RM	?= -rm
-CFLAGS	:= -D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=22 -ggdb
-LDFLAGS := -lfuse
-SRCS	:= imuse.c
-OBJS	:= imuse.o
+CFLAGS	:= -D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=22  -ggdb `pkg-config --cflags glib-2.0`
+LDFLAGS := -lfuse `pkg-config --libs glib-2.0`
+SRCS	:= imuse.c imapper.c
+OBJS	:= imuse.o imapper.o
 OUT		?= imuse
 README	:= /dev/null
 
