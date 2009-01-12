@@ -13,11 +13,28 @@
 
 static int imuse_getattr(const char *path, struct stat *stbuf)
 {
-	return 9;
+	int res = 0;
+
+	memset(stbuf, 0, sizeof(struct stat));
+
+	if (strcmp(path, "/") == 0) {
+		stbuf->st_mode = S_IFDIR | 0755;
+		stbuf->st_nlink = 2;
+	} else {
+		return -ENOENT;
+	}
+	return 0;
 }
 
 static int imuse_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fuse_info)
 {
+	if (strcmp(path, "/") != 0)
+		return -ENOENT;
+
+	filler(buf, ".", NULL, 0);
+	filler(buf, "..", NULL, 0);
+	filler(buf, "Accounts", NULL, 0);
+	filler(buf, "Settings", NULL, 0);
 	return 0;
 }
 
