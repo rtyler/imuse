@@ -2,7 +2,7 @@
 CC   	?= gcc
 TAR	?= tar
 RM	?= -rm
-CFLAGS	:= -D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=22  -ggdb `pkg-config --cflags glib-2.0`
+CFLAGS	:= -D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=22  -g `pkg-config --cflags glib-2.0`
 LDFLAGS := -lfuse -lcunit -lncurses `pkg-config --libs glib-2.0` -lssl -lpam -lc-client
 
 # "Quiet printing"

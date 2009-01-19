@@ -13,11 +13,17 @@ void mm_searched(MAILSTREAM *stream, unsigned long number) { printf("Calling mm_
 void mm_exists(MAILSTREAM *stream, unsigned long number) { printf("Calling mm_exists\n"); return; }
 void mm_expunged(MAILSTREAM *stream, unsigned long number) { printf("Calling mm_expunged\n"); return; }
 void mm_list(MAILSTREAM *stream, int delim, char *name, long attrib) { printf("Calling mm_list\n"); return; }
-void mm_log(char *string,long errflg) { printf("Calling mm_log\n"); return; }
+void mm_log(char *string,long errflg) { 
+	printf("==(mm_log)==> %s\n", string);
+	return; 
+}
 void mm_lsub(MAILSTREAM *stream,int delimiter,char *name,long attributes) { printf("Calling mm_lsub\n"); return; }
 void mm_fatal(char *string) { printf("Calling mm_fatal\n"); return; }
 long mm_diskerror(MAILSTREAM *stream,long errcode,long serious) { printf("Calling mm_diskerror\n"); return 0L; }
-void mm_dlog(char *string) { printf("Calling mm_dlog\n"); }
+void mm_dlog(char *string) { 
+	printf("==(mm_dlog)==> %s\n", string);
+	return;
+}
 void mm_notify(MAILSTREAM *stream,char *string,long errflg) { printf("Calling mm_notify\n"); return; }
 void mm_critical(MAILSTREAM *stream) { printf("Calling mm_critical\n"); return; }
 void mm_nocritical(MAILSTREAM *stream) { printf("Calling mm_nocritical\n"); return;}
@@ -35,6 +41,18 @@ void test_BasicSendMail() {
 	SENDSTREAM *sendstream = smtp_open(servers, smtp_options);
 	CU_ASSERT_PTR_NOT_NULL(sendstream);
 
+	ENVELOPE *envelope = mail_newenvelope();
+	BODY *body = mail_newbody();
+
+	CU_ASSERT_PTR_NOT_NULL(envelope);
+	CU_ASSERT_PTR_NOT_NULL(body);
+
+	// SIGSEGV: likely due to empty envelope and body >_<
+	//long rc = smtp_mail(sendstream, "MAIL", envelope, body);
+
+	mail_free_envelope(envelope);
+	mail_free_body(body);
+	smtp_close(sendstream);
 }
 
 int main() {
@@ -54,7 +72,8 @@ int main() {
    /* add the tests to the suite */
    /* NOTE - ORDER IS IMPORTANT - MUST TEST fread() AFTER fprintf() */
    if (
-		(NULL == CU_add_test(pSuite, "empty test", test_Void)) 
+		(NULL == CU_add_test(pSuite, "empty test", test_Void)) ||
+		(NULL == CU_add_test(pSuite, "sending a basic email", test_BasicSendMail))
 	  )
    {
       CU_cleanup_registry();
