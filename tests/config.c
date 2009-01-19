@@ -33,6 +33,15 @@ void test_BasicConfigSample() {
 	CU_ASSERT_STRING_EQUAL(groups[0], "General");
 	CU_ASSERT_STRING_EQUAL(groups[1], "Account");
 	g_strfreev(groups);
+
+	CU_ASSERT(g_key_file_get_integer(file, "General", "PollInterval", NULL) == 5);
+	
+	CU_ASSERT_STRING_EQUAL(g_key_file_get_string(file, "Account", "ReadServer", NULL), "imap.dot.com");
+	CU_ASSERT_STRING_EQUAL(g_key_file_get_string(file, "Account", "WriteServer", NULL), "smtp.dot.com");
+	CU_ASSERT_STRING_EQUAL(g_key_file_get_string(file, "Account", "Username", NULL), "someguy");
+
+
+	g_key_file_free(file);
 }
 
 
