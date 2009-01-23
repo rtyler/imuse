@@ -4,8 +4,8 @@ TAR	?= tar
 RM	?= -rm
 CFLAGS	:= -D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=22  -ggdb `pkg-config --cflags glib-2.0`
 LDFLAGS := -lfuse `pkg-config --libs glib-2.0`
-SRCS	:= imuse.c imapper.c muse_send.c
-OBJS	:= imuse.o imapper.o muse_send.o
+SRCS	:= imuse.c imapper.c muse_send.c muse_tree.c
+OBJS	:= imuse.o imapper.o muse_send.o muse_tree.o
 OUT		?= imuse
 README	:= /dev/null
 

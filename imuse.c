@@ -19,6 +19,8 @@
 #include "imapper.h"
 
 static GHashTable *__special_directories = NULL;
+static GHashTable *_accounts = NULL; 
+
 struct stat *default_stat_entry(struct stat *stat_defaults) 
 {
 	if (stat_defaults)
@@ -97,6 +99,8 @@ static struct fuse_operations imuse_operations = { .getattr = imuse_getattr, .re
 int main(int argc, char *argv[])
 {
 	__special_directories = g_hash_table_new(NULL, g_str_equal);
+	_accounts = g_hash_table_new(NULL, g_str_equal);
+
 	/* Our keys will eventually turn into "special properties" about our make believe directories */
 	g_hash_table_insert(__special_directories, "Accounts", g_hash_table_new(NULL, NULL));
 	g_hash_table_insert(__special_directories, "Settings", g_hash_table_new(NULL, NULL));
