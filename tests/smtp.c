@@ -7,6 +7,10 @@
 
 #include <CUnit/Basic.h>
 
+#define SMTP_HOST "smtp.dot.com"
+#define SMTP_RECIP "imuse@dot.com"
+
+
 void mm_flags(MAILSTREAM *stream, unsigned long number) { printf("Calling mm_flags\n"); return; }
 void mm_status(MAILSTREAM *stream, char *mailbox, MAILSTATUS *status) { printf("Calling mm_status\n"); return; }
 void mm_searched(MAILSTREAM *stream, unsigned long number) { printf("Calling mm_searched\n"); return; }
@@ -33,26 +37,76 @@ void test_Void() {
 	CU_ASSERT(TRUE == TRUE);
 }
 
+
+void prompt (char *msg,char *txt)
+{
+  printf ("%s",msg);
+  gets (txt);
+}
+
 void test_BasicSendMail() {
-	char *server = "smtp.slide.com";
-	char *servers[] = {server};
+	char *server = SMTP_HOST;
+	char *recip = SMTP_RECIP;
 	long smtp_options = 0L;
 
-	SENDSTREAM *sendstream = smtp_open(servers, smtp_options);
-	CU_ASSERT_PTR_NOT_NULL(sendstream);
+	if (getenv("SMTP_HOST") && getenv("SMTP_RECIP")) {
+		server = getenv("SMTP_HOST");
+		recip = getenv("SMTP_RECIP");
+	}
+
+	CU_ASSERT_STRING_NOT_EQUAL_FATAL(server, SMTP_HOST);
+	CU_ASSERT_STRING_NOT_EQUAL_FATAL(recip, SMTP_RECIP);
+
+	char *servers[] = {server};
+	SENDSTREAM *stream = smtp_open(servers, smtp_options);
+	CU_ASSERT_PTR_NOT_NULL(stream);
+
+	char *name = "Unit Tester";
+	char *sender_email = "imuse-unit-test";
+	char *sender_host = mylocalhost();
+	char *bodytext = (char *)(fs_get(8*MAILTMPLEN));
 
 	ENVELOPE *envelope = mail_newenvelope();
 	BODY *body = mail_newbody();
+	
+	envelope->from = mail_newaddr();
+	envelope->from->personal = cpystr(name);
+	envelope->from->mailbox = cpystr(sender_email);
+	envelope->from->host = cpystr(sender_host);
 
-	CU_ASSERT_PTR_NOT_NULL(envelope);
-	CU_ASSERT_PTR_NOT_NULL(body);
+	envelope->return_path = mail_newaddr();
+	envelope->return_path->mailbox = cpystr(sender_email);
+	envelope->return_path->host = cpystr(sender_host);
 
-	// SIGSEGV: likely due to empty envelope and body >_<
-	//long rc = smtp_mail(sendstream, "MAIL", envelope, body);
+	rfc822_parse_adrlist(&envelope->to, cpystr(recip), sender_host);
 
-	mail_free_envelope(envelope);
-	mail_free_body(body);
-	smtp_close(sendstream);
+	envelope->subject = cpystr("test_BasicSendMail");
+
+	body->type = TYPETEXT;
+
+	snprintf(bodytext, (8*MAILTMPLEN), "This is a simple text body");
+
+	body->contents.text.data = (unsigned char *)(bodytext);
+	body->contents.text.size = strlen(bodytext);
+
+	envelope->date = (char *)(fs_get(1 + MAILTMPLEN));
+	rfc822_date(envelope->date);
+
+	if (stream) {
+		printf("Sending...\n");
+		if (smtp_mail(stream, "MAIL", envelope, body)) {
+			printf("Okay, %s\n", stream->reply);
+		}
+		else {
+			printf("Fail, %s\n", stream->reply);
+		}
+	}
+
+	mail_free_envelope(&envelope);
+	mail_free_body(&body);
+	if (stream) {
+		smtp_close(stream);
+	}
 }
 
 int main() {
