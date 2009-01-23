@@ -95,6 +95,9 @@ void test_BasicSendMail() {
 		}
 	}
 
+	// Make sure we successfully sent
+	CU_ASSERT_EQUAL(stream->replycode, 250);
+
 	mail_free_envelope(&envelope);
 	mail_free_body(&body);
 	if (stream) {
