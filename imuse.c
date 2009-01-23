@@ -16,30 +16,10 @@
 
 #include <glib.h>
 
-#include "imapper.h"
+#include "muse_tree.h"
 
 static GHashTable *__special_directories = NULL;
 static GHashTable *_accounts = NULL; 
-
-struct stat *default_stat_entry(struct stat *stat_defaults) 
-{
-	if (stat_defaults)
-		memset(stat_defaults, 0, sizeof(struct stat));
-	else
-		stat_defaults = malloc(sizeof(struct stat));
-	stat_defaults->st_mode = 0;
-	stat_defaults->st_ino = 0;
-	stat_defaults->st_dev = 0;
-	stat_defaults->st_nlink = 0;
-	stat_defaults->st_uid = getuid();
-	stat_defaults->st_gid = getgid();
-	stat_defaults->st_size = 0;
-	stat_defaults->st_atime = time(NULL);
-	stat_defaults->st_mtime = time(NULL);
-	stat_defaults->st_ctime = time(NULL);
-
-	return stat_defaults;
-}
 
 static int glist_data_compare(GList *a, GList *b)
 {
@@ -51,11 +31,11 @@ static int glist_data_compare(GList *a, GList *b)
 static int imuse_getattr(const char *path, struct stat *stbuf)
 {
 	int res = 0;
-	stbuf = default_stat_entry(stbuf);
+	stbuf = default_stat(stbuf);
 
 	if (strcmp(path, "/") == 0) {
 		stbuf->st_mode = S_IFDIR | 0755;
-		stbuf->st_nlink = 2;
+		stbuf->st_nlink = 1;
 	} else {
 		++path;
 		GList *rc = g_list_find_custom(g_hash_table_get_keys(__special_directories), path, (GCompareFunc)(glist_data_compare));
