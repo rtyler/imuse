@@ -37,13 +37,6 @@ void test_Void() {
 	CU_ASSERT(TRUE == TRUE);
 }
 
-
-void prompt (char *msg,char *txt)
-{
-  printf ("%s",msg);
-  gets (txt);
-}
-
 void test_BasicSendMail() {
 	char *server = SMTP_HOST;
 	char *recip = SMTP_RECIP;
