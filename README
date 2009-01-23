@@ -1,0 +1,19 @@
+  _                                  
+ (_)  _ __ ___    _   _   ___    ___ 
+ | | | '_ ` _ \  | | | | / __|  / _ \
+ | | | | | | | | | |_| | \__ \ |  __/
+ |_| |_| |_| |_|  \__,_| |___/  \___|
+                                     
+
+
+imuse is an experimental IMAP file-system for FUSE. The general idea behind the project is to present 
+what equates to "networked data" as any other kind of "networked data" that we're used to (CIFS, 
+AFS, AFP, SSHFS, FTP, etc), simply as a set of folders and files. 
+
+The overall goal of the imuse project is to allow file-system-like traversal of an IMAP mailbox as if 
+it were "just another filesystem" with emails being representated as simple files on the filesystem.
+
+imuse uses the University of Washington IMAP library (commonly referred to as "c-client") which drives
+applications like (Al)pine. 
+
+
